@@ -1,72 +1,108 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
-import loginAnimation from "../assets/Login_and_Sign_up.json"
+import { Eye, EyeOff } from "lucide-react";
+import loginAnimation from "../assets/login.json";
 import Navbar from "../component/Navbar";
+import Footer from "../component/Footer";
 
 const Login = () => {
-    console.log("Login page is running")
-    console.log( loginAnimation.layers)
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Simulate login delay
+    setTimeout(() => {
+      setLoading(false);
+      alert("Logged in successfully!");
+    }, 1500);
+  };
+
   return (
-    
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-red-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-rose-50 to-red-100">
       <Navbar />
 
-      <div className="flex flex-col md:flex-row items-center justify-center px-6 py-16 gap-12">
-
-        {/* Animation
-        <div className="w-[300px] md:w-[420px]">
-          <Lottie animationData={loginAnimation} loop />
-        </div> */}
-
-         <dotlottie-player
-    src="https://lottie.host/b0084d5a-d69b-4e31-aafa-5ee8432d0995/eq1weKgnDx.lottie"
-    background="transparent"
-    speed="1"
-    autoplay
-    loop
-    style={{ width: "50%", height: "50%" }}
-  ></dotlottie-player>
-
+      <div className="flex flex-col-reverse lg:flex-row items-center justify-center flex-grow px-6 md:px-10 py-10 md:py-16 gap-10 md:gap-20">
+        
         {/* Login Form */}
-        <div className="bg-white/90 backdrop-blur-sm shadow-xl p-8 rounded-2xl w-full max-w-md">
-          <h2 className="text-3xl font-extrabold text-center text-[#7A0010]">
-            Welcome Back
+        <div className="bg-white/95 shadow-2xl p-8 md:p-10 rounded-3xl w-full max-w-sm sm:max-w-md md:max-w-lg transition-all duration-300">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-center text-[#7A0010]">
+            Welcome Back 👋
           </h2>
-          <p className="text-center text-gray-600 mt-2">
+          <p className="text-center text-gray-600 mt-2 md:mt-3 text-sm md:text-base">
             Login to continue saving lives ❤️
           </p>
 
-          <form className="mt-8 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-8 md:mt-10 space-y-5 md:space-y-6">
+            
+            {/* Email */}
+            <div>
+              <input
+                type="email"
+                placeholder="Email address"
+                required
+                className="w-full px-4 py-3 md:py-3.5 rounded-xl border border-gray-200 focus:border-[#FF4242] focus:ring-2 focus:ring-[#FF4242]/30 outline-none bg-white shadow-sm transition duration-200 text-sm md:text-base"
+              />
+            </div>
 
-            <input
-              type="email"
-              placeholder="Email"
-              className="input input-bordered w-full bg-white/70"
-            />
+            {/* Password Field with Eye Icon */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                required
+                className="w-full px-4 py-3 md:py-3.5 rounded-xl border border-gray-200 focus:border-[#FF4242] focus:ring-2 focus:ring-[#FF4242]/30 outline-none bg-white shadow-sm transition duration-200 text-sm md:text-base pr-10"
+              />
+              <div
+                className="absolute right-3 top-3.5 md:top-3.5 text-gray-500 cursor-pointer hover:text-[#FF4242] transition"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </div>
+            </div>
 
-            <input
-              type="password"
-              placeholder="Password"
-              className="input input-bordered w-full bg-white/70"
-            />
-
+            {/* Login Button with Loading Animation */}
             <button
               type="submit"
-              className="btn bg-[#FF4242] hover:bg-[#d93737] text-white w-full"
+              disabled={loading}
+              className={`w-full py-3 md:py-3.5 rounded-xl font-semibold text-base md:text-lg text-white shadow-lg transition-transform duration-200 ${
+                loading
+                  ? "bg-[#d93737]/70 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#FF4242] to-[#d93737] hover:scale-[1.02] active:scale-[0.98]"
+              }`}
             >
-              Login
+              {loading ? (
+                <div className="flex justify-center items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Logging in...
+                </div>
+              ) : (
+                "Login"
+              )}
             </button>
           </form>
 
-          <p className="text-center text-gray-600 mt-4 text-sm">
+          <p className="text-center text-gray-600 mt-5 text-sm md:text-base">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-[#7A0010] font-semibold hover:underline">
+            <Link
+              to="/register"
+              className="text-[#7A0010] font-semibold hover:underline"
+            >
               Register Now
             </Link>
           </p>
         </div>
 
+        {/* Lottie Animation */}
+        <div className="w-64 sm:w-80 md:w-96 lg:w-[420px]">
+          <Lottie animationData={loginAnimation} loop={true} />
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
