@@ -5,21 +5,47 @@ import { Eye, EyeOff } from "lucide-react";
 import loginAnimation from "../assets/login.json";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleSubmit = (e) => {
+  const [errorMessage,setErrorMessage]=useState("")
+  const [email,setEmail]=useState("")
+  const[pass,setPass]=useState("");
+  const dispatch=useDispatch()
+  const handleSubmit = async(e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Simulate login delay
+try{
+     const res=await axios.post(`${BASE_URL}/api/users/login`,{
+      email,
+      password:pass
+     })
+     console.log("Login succesfull");
+      // Simulate login delay
     setTimeout(() => {
       setLoading(false);
       alert("Logged in successfully!");
     }, 1500);
-  };
+      dispatch(setUser(res.data.user))
+
+}catch (err) {
+    console.log(err);
+
+    if (err.response && err.response.data && err.response.data.message) {
+      setErrorMessage(err.response.data.message); 
+    } else {
+      setErrorMessage("Something went wrong. Try again.");
+    }
+
+    setLoading(false);
+  }
+};
+   
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-rose-50 to-red-100">
@@ -43,6 +69,7 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="Email address"
+                  onChange={(e) => setEmail(e.target.value)} 
                 required
                 className="w-full px-4 py-3 md:py-3.5 rounded-xl border border-gray-200 focus:border-[#FF4242] focus:ring-2 focus:ring-[#FF4242]/30 outline-none bg-white shadow-sm transition duration-200 text-sm md:text-base"
               />
@@ -53,6 +80,7 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                  onChange={(e) => setPass(e.target.value)} 
                 required
                 className="w-full px-4 py-3 md:py-3.5 rounded-xl border border-gray-200 focus:border-[#FF4242] focus:ring-2 focus:ring-[#FF4242]/30 outline-none bg-white shadow-sm transition duration-200 text-sm md:text-base pr-10"
               />
@@ -83,6 +111,12 @@ const Login = () => {
                 "Login"
               )}
             </button>
+            {errorMessage && (
+  <p className="text-red-600 text-center font-medium mt-2">
+    {errorMessage}
+  </p>
+)}
+
           </form>
 
           <p className="text-center text-gray-600 mt-5 text-sm md:text-base">

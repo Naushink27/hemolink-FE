@@ -5,17 +5,33 @@ import { Eye, EyeOff } from "lucide-react";
 import loginAnimation from "../assets/login.json";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
+
+
+
+
+
+
+
+
+
+
 
 const Register = () => {
+  console.log(BASE_URL)
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage,setErrorMessage]=useState("")
+  const dispatch=useDispatch()
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
+
     bloodGroup: "",
     phone: "",
     location: "",
@@ -26,14 +42,31 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     setLoading(true);
+    try{
+        const res=await axios.post(`${BASE_URL}/api/users/register`,formData)
+        console.log("Registeration successfull",res)
+        dispatch(setUser(res.data.newUser))
+        setTimeout(()=>{
+          alert("User registered succesfully")
+          setLoading(false)
+        },3000)
 
-    setTimeout(() => {
-      setLoading(false);
-      alert(`Account created successfully as ${formData.role || "User"}!`);
-    }, 1500);
+    }catch (err) {
+    console.log(err);
+
+    if (err.response && err.response.data && err.response.data.message) {
+      setErrorMessage(err.response.data.message); 
+    } else {
+      setErrorMessage("Something went wrong. Try again.");
+    }
+
+    setLoading(false);
+  }
+
+    
   };
 
   return (
@@ -109,24 +142,7 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm Password"
-                required
-                className="w-full px-4 py-3 md:py-3.5 rounded-xl border border-gray-200 focus:border-[#FF4242] focus:ring-2 focus:ring-[#FF4242]/30 outline-none bg-white shadow-sm text-sm md:text-base pr-10"
-              />
-              <div
-                className="absolute right-3 top-3.5 text-gray-500 cursor-pointer hover:text-[#FF4242]"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </div>
-            </div>
+           
 
             {/* Blood Group */}
             <select
@@ -188,6 +204,12 @@ const Register = () => {
                 "Register"
               )}
             </button>
+            {errorMessage && (
+  <p className="text-red-600 text-center font-medium mt-2">
+    {errorMessage}
+  </p>
+)}
+
           </form>
 
           <p className="text-center text-gray-600 mt-5 text-sm md:text-base">
