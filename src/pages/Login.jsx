@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import { Eye, EyeOff } from "lucide-react";
 import loginAnimation from "../assets/login.json";
@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlice";
 
 const Login = () => {
+  const Navigate=useNavigate()
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage,setErrorMessage]=useState("")
@@ -24,8 +25,10 @@ try{
      const res=await axios.post(`${BASE_URL}/api/users/login`,{
       email,
       password:pass
-     })
+     },{withCredentials:true})
      console.log("Login succesfull");
+
+
       // Simulate login delay
     setTimeout(() => {
       setLoading(false);
@@ -33,7 +36,19 @@ try{
     }, 1500);
       dispatch(setUser(res.data.user))
 
-}catch (err) {
+      console.log(res)
+      if(res?.data?.user?.role==="Patient"){
+        Navigate("/patientDashboard")
+      }
+      else if(res?.data?.user?.role==="Donor"){
+        Navigate("/donorDashboard")
+      }
+      else if(res?.data?.user?.role==="Admin"){
+        Navigate("/adminDashboard")
+      }
+      }
+
+catch (err) {
     console.log(err);
 
     if (err.response && err.response.data && err.response.data.message) {

@@ -46,7 +46,7 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try{
-        const res=await axios.post(`${BASE_URL}/api/users/register`,formData)
+        const res=await axios.post(`${BASE_URL}/api/users/register`,formData,{withCredentials:true})
         console.log("Registeration successfull",res)
         dispatch(setUser(res.data.newUser))
         setTimeout(()=>{
